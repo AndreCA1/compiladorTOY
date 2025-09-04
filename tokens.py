@@ -1,11 +1,10 @@
 from enum import IntEnum
-
 class TOKEN(IntEnum):
     fim = 0
-    fimarquivo = 1
-    erro = 2
+    inicio = 1
+    fimarquivo = 2
+    erro = 3
 
-    inicio = 3
     leia = 4
     escreva = 5
     IF = 6
@@ -34,17 +33,22 @@ class TOKEN(IntEnum):
     divide = 25
     porcentagem = 26
 
+    maior = 27
+    menor = 28
+
     @classmethod
     def msg(cls, token):
         nomes = {
-            0: 'end',
-            1: '<eof>',
-            2: 'erro',
-            3: 'begin',
-            4: 'read',
-            5: 'print',
+            0: 'fim',
+            1: 'inicio',
+            2: '<eof>',
+            3: 'erro',
+
+            4: 'leia',
+            5: 'escreva',
             6: 'if',
             7: 'else',
+
             8: 'ident',
             9: 'string',
             10: 'numero',
@@ -66,18 +70,22 @@ class TOKEN(IntEnum):
             23: '-',
             24: '*',
             25: '/',
-            26: '%'
+            26: '%',
+
+            27: '>',
+            28: '<'
         }
         return nomes[token]
 
     @classmethod
     def reservada(cls, lexema):
         reservadas = {
+            'inicio': TOKEN.inicio,
+            'fim.': TOKEN.fim,
             'if': TOKEN.IF,
-            'end': TOKEN.fim,
             'else': TOKEN.ELSE,
-            'read': TOKEN.leia,
-            'print': TOKEN.escreva,
+            'leia': TOKEN.leia,
+            'escreva': TOKEN.escreva,
             'and': TOKEN.AND,
             'or': TOKEN.OR,
             'not': TOKEN.NOT

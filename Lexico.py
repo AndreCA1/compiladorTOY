@@ -1,4 +1,4 @@
-from token import TOKEN
+from tokens import TOKEN
 
 global linha, coluna
 
@@ -44,70 +44,136 @@ class Lexico:
         simbolo = self.getChar()
         lexema = ''
 
-        self.descartaComentatios()
-
         lin = self.linha
         col = self.coluna
 
         while(True):
             if estado == 1:
-                if simbolo.isalpha():
+
+                #ignora espaco e quebra de linha
+                if simbolo == " " or simbolo == "\n":
+                    simbolo = self.getChar()
+                    continue
+
+                #ignora comentario
+                elif simbolo == "/" and self.getChar() == "/":
+                    while(simbolo != "\n"):
+                        simbolo = self.getChar()
+
+                #palavras
+                elif simbolo.isalpha():
                     estado = 2
+
+                #numeros
                 elif simbolo.isdigit():
                     estado = 3
+
+                #strings
                 elif simbolo == '"':
                     estado = 4
-                elif simbolo == "=":
-                    estado = 5
 
+                elif simbolo == "=":
+                    return TOKEN.igual, "=", lin, col
                 elif simbolo == "{":
-                    return (TOKEN.abreChave, "{", lin, col)
-                elif simbolo == "{":
-                    return (TOKEN.fechaChave, "}", lin, col)
+                    return TOKEN.abreChave, "{", lin, col
+                elif simbolo == "}":
+                    return TOKEN.fechaChave, "}", lin, col
                 elif simbolo == "(":
-                    return (TOKEN.abrePar, "(", lin, col)
+                    return TOKEN.abreParenteses, "(", lin, col
                 elif simbolo == ")":
-                    return (TOKEN.fechaPar, ")", lin, col)
+                    return TOKEN.fechaParenteses, ")", lin, col
                 elif simbolo == ',':
-                    return (TOKEN.virgula, ",", lin, col)
+                    return TOKEN.virgula, ",", lin, col
                 elif simbolo == ";":
-                    return (TOKEN.pontoVirgula, ";", lin, col)
+                    return TOKEN.pontoVirgula, ";", lin, col
                 elif simbolo == ".":
-                    return (TOKEN.pontofinal, ".", lin, col)
+                    return TOKEN.pontofinal, ".", lin, col
 
                 elif simbolo == "+":
-                    return (TOKEN.mais, "+", lin, col)
+                    return TOKEN.mais, "+", lin, col
                 elif simbolo == "-":
-                    return (TOKEN.menos, "-", lin, col)
+                    return TOKEN.menos, "-", lin, col
                 elif simbolo == "*":
-                    return (TOKEN.vezes, "*", lin, col)
+                    return TOKEN.vezes, "*", lin, col
                 elif simbolo == "/":
-                    return (TOKEN.divide, "/", lin, col)
+                    return TOKEN.divide, "/", lin, col
                 elif simbolo == "%":
-                    return (TOKEN.porcentagem, "%", lin, col)
+                    return TOKEN.porcentagem, "%", lin, col
+                elif simbolo == ">":
+                    return TOKEN.maior, ">", lin, col
+                elif simbolo == "<":
+                    return TOKEN.menor, "<", lin, col
 
                 elif simbolo == "\0":
-                    return (TOKEN.fimarquivo, "<eof>", lin, col)
+                    return TOKEN.fimarquivo, "<eof>", lin, col
                 else:
                     lexema += simbolo
-                    return (TOKEN.erro, lexema, lin, col)
+                    return TOKEN.erro, lexema, lin, col
 
             elif estado == 2:
-                # TODO: verificar lexema
-                if simbolo == "opRel":
-                    return (TOKEN.opRel, "", lin, col)
-                elif simbolo == "and":
-                    return (TOKEN.AND, "", lin, col)
-                elif simbolo == "or":
-                    return (TOKEN.OR, "", lin, col)
-                elif simbolo == "not":
-                    return (TOKEN.NOT, "", lin, col)
+                estado = 1
+                palavra = simbolo
+                while True:
+                    simbolo = self.getChar()
+                    if simbolo == ".":
+                        pass
+                    elif(not simbolo.isalnum()):
+                        self.unGetChar(simbolo)
+                        break
+                    palavra += simbolo
 
+                if palavra == "inicio":
+                    return TOKEN.inicio, palavra, lin, col
+                if palavra == "fim.":
+                    return TOKEN.fim, palavra, lin, col
+
+                if palavra == "if":
+                    return TOKEN.IF, palavra, lin, col
+                if palavra == "else":
+                    return TOKEN.ELSE, palavra, lin, col
+
+                if palavra == "leia":
+                    return TOKEN.leia, palavra, lin, col
+                if palavra == "escreva":
+                    return TOKEN.escreva, palavra, lin, col
+
+                elif palavra == "and":
+                    return TOKEN.AND, palavra, lin, col
+                elif palavra == "or":
+                    return TOKEN.OR, palavra, lin, col
+                elif palavra == "not":
+                    return TOKEN.NOT, palavra, lin, col
+
+                else:
+                    return TOKEN.ident, palavra, lin, col
+
+            elif estado == 3:
+                estado = 1
+                numero = simbolo
+                while True:
+                    simbolo = self.getChar()
+                    if (not simbolo.isdigit()):
+                        break
+                    numero += simbolo
+
+                self.unGetChar(simbolo)
+                return TOKEN.num, numero, lin, col
+
+            elif estado == 4:
+                estado = 1
+                string = ''
+                simbolo = self.getChar()
+                while simbolo != '"':
+                    string += simbolo
+                    simbolo = self.getChar()
+
+                return TOKEN.string, string, lin, col
 
 if __name__ == '__main__':
-    lexico = Lexico("teste.toy")
-    token = lexico.getToken()
-    while (token[0] != TOKEN.eof):
-        lexico.imprimirToken(token)
+    with open("example.toy", "r") as arqFonte:
+        lexico = Lexico(arqFonte)
         token = lexico.getToken()
-    lexico.imprimirToken(token)
+        while token[0] != TOKEN.fimarquivo:
+            lexico.imprimirToken(token)
+            token = lexico.getToken()
+        lexico.imprimirToken(token)
