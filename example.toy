@@ -1,4 +1,8 @@
-// exemplo de programa na linguagem TOY
+//
+// exemplo para testar o analisador lexico
+// da linguagem TOY
+//
+
 inicio
     leia("entre com x: ", x);
     leia("entre com y: ", y);
@@ -12,3 +16,11 @@ inicio
     c = y * b;
     escreva("res= ", c);
 fim.
+
+342.234jhsf
+76<><=%#@
+11ab
+ab11.354
+sjfds//skdjflfjs
+sjdfks/ /ajdak
+..--++=<|&&!===

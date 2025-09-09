@@ -1,6 +1,5 @@
 from tokens import TOKEN
-
-global linha, coluna
+from colorama import init, Fore
 
 class Lexico:
     def __init__(self, arqFonte):
@@ -37,28 +36,33 @@ class Lexico:
     def imprimirToken(self, tokenCorrente):
         (token, lexema, linha, coluna) = tokenCorrente
         msg = TOKEN.msg(token)
-        print(f'(tk = {msg} lex = {lexema} lin = {linha} col = {coluna})')
-
+        print(Fore.GREEN + '(tk = ' + Fore.BLUE + str(msg) + Fore.GREEN + ' lex = ' + Fore.YELLOW + str(
+            lexema) + Fore.GREEN + ' lin = ' + Fore.RESET + str(linha) + Fore.GREEN + ' col = ' + Fore.RESET + str(coluna))
     def getToken(self):
         estado = 1
         simbolo = self.getChar()
         lexema = ''
 
-        lin = self.linha
-        col = self.coluna
-
         while(True):
+            lin = self.linha
+            col = self.coluna
             if estado == 1:
 
-                #ignora espaco e quebra de linha
-                if simbolo == " " or simbolo == "\n":
+                #ignora comentario
+                if simbolo == "/":
+                    simbolo = self.getChar()
+                    if simbolo != "/":
+                        self.unGetChar(simbolo)
+                        return TOKEN.divide, "/", lin, col
+                    else:
+                        simbolo = self.getChar()
+                        while (simbolo != "\n"):
+                            simbolo = self.getChar()
+
+                # ignora espaco e quebra de linha
+                elif simbolo == " " or simbolo == "\n":
                     simbolo = self.getChar()
                     continue
-
-                #ignora comentario
-                elif simbolo == "/" and self.getChar() == "/":
-                    while(simbolo != "\n"):
-                        simbolo = self.getChar()
 
                 #palavras
                 elif simbolo.isalpha():
@@ -95,8 +99,6 @@ class Lexico:
                     return TOKEN.menos, "-", lin, col
                 elif simbolo == "*":
                     return TOKEN.vezes, "*", lin, col
-                elif simbolo == "/":
-                    return TOKEN.divide, "/", lin, col
                 elif simbolo == "%":
                     return TOKEN.porcentagem, "%", lin, col
                 elif simbolo == ">":
@@ -170,6 +172,7 @@ class Lexico:
                 return TOKEN.string, string, lin, col
 
 if __name__ == '__main__':
+    init()
     with open("example.toy", "r") as arqFonte:
         lexico = Lexico(arqFonte)
         token = lexico.getToken()
