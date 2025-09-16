@@ -1,26 +1,33 @@
-//
-// exemplo para testar o analisador lexico
-// da linguagem TOY
-//
+// Exemplo de teste da linguagem TOY
 
 inicio
-    leia("entre com x: ", x);
-    leia("entre com y: ", y);
-    a= 5 * x;
-    if ( a>70)
-        b = 1;
-    else {
-        b = 2;
-        a = 3;
-    }
-    c = y * b;
-    escreva("res= ", c);
-fim.
+    leia("x: ", x);
+    leia("y: ", y);
 
-342.234jhsf
-76<><=%#@
-11ab
-ab11.354
-sjfds//skdjflfjs
-sjdfks/ /ajdak
-..--++=<|&&!===
+    if (x > 10)
+        resultado1 = 1;
+
+    if (y < 5)
+        resultado2 = 1;
+    else
+        resultado2 = 0;
+
+    if (x > y)
+        resultado3 = x;
+    else
+        resultado3 = y;
+
+    if (x < y)
+        resultado4 = x + y;
+    else
+        resultado4 = x - y;
+
+
+
+    escreva("R1=", resultado1);
+    escreva("R2=", resultado2);
+    escreva("R3=", resultado3);
+    escreva("R4=", resultado4);
+    escreva("R5=", resultado5);
+    escreva("R6=", resultado6);
+fim.

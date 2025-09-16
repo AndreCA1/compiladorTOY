@@ -1,5 +1,6 @@
 from tokens import TOKEN
 from colorama import init, Fore
+import sintatico
 
 class Lexico:
     def __init__(self, arqFonte):
@@ -175,8 +176,16 @@ if __name__ == '__main__':
     init()
     with open("example.toy", "r") as arqFonte:
         lexico = Lexico(arqFonte)
-        token = lexico.getToken()
-        while token[0] != TOKEN.fimarquivo:
-            lexico.imprimirToken(token)
-            token = lexico.getToken()
-        lexico.imprimirToken(token)
+        #token = lexico.getToken()
+        # while token[0] != TOKEN.fimarquivo:
+        #     lexico.imprimirToken(token)
+        #     token = lexico.getToken()
+        # lexico.imprimirToken(token)
+
+    parser = sintatico.sintatico(lexico)
+
+    try:
+        parser.prog()
+        print("Programa reconhecido com sucesso!")
+    except Exception as e:
+        print("Erro de sintaxe:", e)
